@@ -6,13 +6,11 @@ let scaleFactor = 1;
 function resize() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    // Оптимальный размер сердца для мобильных экранов
     scaleFactor = Math.min(canvas.width, canvas.height) * 0.014;
 }
 window.addEventListener('resize', resize);
 resize();
 
-// Баланс: 10 000 частиц для идеальной туманности без потери плавности
 const heartParticleCount = 10000; 
 const bgStarCount = 150;
 const heartParticles = [];
@@ -25,7 +23,6 @@ function getHeartPoint(t) {
     return { x: x * scaleFactor, y: y * scaleFactor };
 }
 
-// 1. Создание фонового звездного неба
 for (let i = 0; i < bgStarCount; i++) {
     backgroundStars.push({
         x: Math.random() * canvas.width,
@@ -39,28 +36,24 @@ for (let i = 0; i < bgStarCount; i++) {
 const centerX = canvas.width / 2;
 const centerY = canvas.height * 0.42;
 
-// 2. Генерация облака галактики из 10 000 частиц
 for (let i = 0; i < heartParticleCount; i++) {
     const t = Math.random() * Math.PI * 2;
     const heartTarget = getHeartPoint(t);
     
     const angle = Math.random() * Math.PI * 2;
-    const speed = Math.random() * 16 + 2; // Динамичный космический взрыв
+    const speed = Math.random() * 18 + 2; 
 
     const isOutline = Math.random() > 0.45;
     let color;
 
     if (isOutline) {
-        // Огненно-рыжий, золотой и белый контур (в точности как на картинке)
-        const fire = ['rgba(255, 59, 0, ', 'rgba(255, 122, 0, ', 'rgba(255, 180, 0, ', 'rgba(255, 255, 255, '];
+        const fire = ['rgba(255,59,0,', 'rgba(255,122,0,', 'rgba(255,180,0,', 'rgba(255,255,255,'];
         color = fire[Math.floor(Math.random() * fire.length)];
     } else {
-        // Внутренний сине-голубой газ
-        const blues = ['rgba(0, 85, 255, ', 'rgba(0, 191, 255, ', 'rgba(0, 242, 254, ', 'rgba(30, 144, 255, '];
+        const blues = ['rgba(0,85,255,', 'rgba(0,191,255,', 'rgba(0,242,254,', 'rgba(30,144,255,'];
         color = blues[Math.floor(Math.random() * blues.length)];
     }
 
-    // Распределяем частицы: контурные четко по краям, газовые — внутри
     const internalDist = isOutline ? (Math.random() * 0.12 + 0.9) : (Math.random() * 0.95);
     const baseAlpha = Math.random() * 0.4 + 0.3;
 
@@ -73,7 +66,7 @@ for (let i = 0; i < heartParticleCount; i++) {
         ty: (heartTarget.y * internalDist) + centerY,
         origTx: (heartTarget.x * internalDist) + centerX,
         origTy: (heartTarget.y * internalDist) + centerY,
-        size: isOutline ? (Math.random() * 1.5 + 0.8) : (Math.random() * 1.2 + 0.4),
+        size: isOutline ? (Math.random() * 1.4 + 0.8) : (Math.random() * 1.1 + 0.4),
         baseColor: color,
         alpha: baseAlpha,
         wobble: Math.random() * 100,
@@ -81,7 +74,6 @@ for (let i = 0; i < heartParticleCount; i++) {
     });
 }
 
-// Управление касаниями для телефонов
 const touch = { x: null, y: null, radius: 55 };
 function handleMove(x, y) { touch.x = x; touch.y = y; }
 function handleEnd() { touch.x = null; touch.y = null; }
@@ -91,18 +83,15 @@ window.addEventListener('touchmove', (e) => handleMove(e.touches.clientX, e.touc
 window.addEventListener('mouseleave', handleEnd);
 window.addEventListener('touchend', handleEnd);
 
-// Фазы анимации
 setTimeout(() => { mode = 'heart'; }, 900); 
 setTimeout(() => { cardText.classList.add('show'); }, 4000);
 
 let centralStarPulse = 0;
 
 function animate() {
-    // Небольшой шлейф для эффекта летящих комет
-    ctx.fillStyle = 'rgba(1, 1, 3, 0.08)';
+    ctx.fillStyle = 'rgba(1, 1, 4, 0.09)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Отрисовка фонового космоса
     backgroundStars.forEach(star => {
         star.alpha += star.blink;
         if (star.alpha > 1 || star.alpha < 0.2) star.blink = -star.blink;
@@ -110,10 +99,8 @@ function animate() {
         ctx.fillRect(star.x, star.y, star.size, star.size);
     });
 
-    // Режим 'screen' заставляет 10 000 точек буквально сиять при наложении друг на друга
     ctx.globalCompositeOperation = 'screen';
 
-    // Сверхъяркое голубое ядро в центре сердца
     if (mode === 'heart') {
         centralStarPulse += 0.04;
         const starSize = 5 + Math.sin(centralStarPulse) * 1.5;
@@ -127,7 +114,6 @@ function animate() {
         ctx.restore();
     }
 
-    // Физика и рендеринг 10 000 частиц туманности
     heartParticles.forEach(p => {
         p.wobble += p.wobbleSpeed;
 
@@ -137,12 +123,10 @@ function animate() {
             p.vx *= 0.93;
             p.vy *= 0.93;
         } else if (mode === 'heart') {
-            // Динамическое колыхание краев галактики
             const wave = Math.sin(p.wobble) * 5;
             const targetX = p.origTx + Math.cos(p.wobble) * wave * 0.5;
             const targetY = p.origTy + Math.sin(p.wobble) * wave * 0.5;
 
-            // Взаимодействие с пальцем/курсором
             if (touch.x !== null && touch.y !== null) {
                 const dx = p.x - touch.x;
                 const dy = p.y - touch.y;
@@ -158,16 +142,13 @@ function animate() {
             p.y += (targetY - p.y) * 0.035;
         }
 
-        // Рисуем мягкую круглую частицу
         ctx.fillStyle = p.baseColor + p.alpha + ')';
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
     });
 
-    // Возврат к стандартному режиму для текста открытки
     ctx.globalCompositeOperation = 'source-over';
-
     requestAnimationFrame(animate);
 }
 
