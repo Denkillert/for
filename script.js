@@ -144,7 +144,8 @@ function parseQR() {
         }
     }
     if (qrPositions.length > 0) {
-        const qrScale = Math.min(canvas.width, canvas.height) * 0.0040; 
+        const isMobile = Math.min(canvas.width, canvas.height) < 700;
+        const qrScale = Math.min(canvas.width, canvas.height) * (isMobile ? 0.0065 : 0.0022);
         qrTotalSizeOnScreen = qrSize * qrScale;
         qrOffsetX = canvas.width / 2 - qrTotalSizeOnScreen / 2;
         qrOffsetY = canvas.height * 0.42 - qrTotalSizeOnScreen / 2;
