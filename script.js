@@ -1,7 +1,7 @@
 // ==========================================
 // НАСТРОЙКИ КОСМОСА — НАСТРАИВАЙТЕ ЗДЕСЬ!
 // ==========================================
-const heartParticleCount = 12000;
+const heartParticleCount = 11000;
 const bgStarCount = 150;
 const strayCount = 200;
 
@@ -145,7 +145,7 @@ function parseQR() {
     }
     if (qrPositions.length > 0) {
         const isMobile = Math.min(canvas.width, canvas.height) < 700;
-        const qrScale = Math.min(canvas.width, canvas.height) * (isMobile ? 0.0055 : 0.0022);
+        const qrScale = Math.min(canvas.width, canvas.height) * (isMobile ? 0.0035 : 0.0022);
         qrTotalSizeOnScreen = qrSize * qrScale;
         qrOffsetX = canvas.width / 2 - qrTotalSizeOnScreen / 2;
         qrOffsetY = canvas.height * 0.42 - qrTotalSizeOnScreen / 2;
