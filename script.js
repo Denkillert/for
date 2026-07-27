@@ -37,12 +37,22 @@ let mode = "supernova";
 let globalTime = 0;
 let qrPositions = []; 
 
-const phrase = "Получай свой подарочек :)";
+const phrase = "Получай свой\nподарочек :)";
+const lines = phrase.split("\n");
 
-phrase.split("").forEach(char => {
-    const span = document.createElement("span");
-    span.textContent = char === " " ? "\u00A0" : char;
-    textContainer.appendChild(span);
+let globalCharIndex = 0;
+lines.forEach((line, lineIdx) => {
+    line.split("").forEach(char => {
+        const span = document.createElement("span");
+        span.textContent = char === " " ? "\u00A0" : char;
+        span.dataset.lineIndex = globalCharIndex;
+        textContainer.appendChild(span);
+        globalCharIndex++;
+    });
+    if (lineIdx < lines.length - 1) {
+        const br = document.createElement("br");
+        textContainer.appendChild(br);
+    }
 });
 
 function getHeartPoint(t) {
@@ -116,7 +126,7 @@ let qrOffsetX = 0, qrOffsetY = 0, qrTotalSizeOnScreen = 0;
 function parseQR() {
     const tempCanvas = document.createElement("canvas");
     const tempCtx = tempCanvas.getContext("2d");
-    const qrSize = 130; 
+    const qrSize = 200; 
     tempCanvas.width = qrSize;
     tempCanvas.height = qrSize;
     tempCtx.imageSmoothingEnabled = false;
@@ -134,24 +144,36 @@ function parseQR() {
         }
     }
     if (qrPositions.length > 0) {
-        const qrScale = Math.min(canvas.width, canvas.height) * 0.0022; 
+        const qrScale = Math.min(canvas.width, canvas.height) * 0.0040; 
         qrTotalSizeOnScreen = qrSize * qrScale;
         qrOffsetX = canvas.width / 2 - qrTotalSizeOnScreen / 2;
         qrOffsetY = canvas.height * 0.42 - qrTotalSizeOnScreen / 2;
         const textY = qrOffsetY + qrTotalSizeOnScreen + 60;
-        heartParticles.forEach((p, index) => {
-            if (index < phrase.length) {
-                p.qrx = canvas.width / 2 - (phrase.length * 9) + (index * 18);
-                p.qry = textY;
-                p.isTextPointer = true;
-                p.letterIndex = index;
-            } else {
-                const pos = qrPositions[index % qrPositions.length];
-                p.qrx = pos.x * qrScale + qrOffsetX;
-                p.qry = pos.y * qrScale + qrOffsetY;
-                p.isTextPointer = false;
-            }
-        });
+const lineSpacing = 55;  // расстояние между строками текста
+let charCounter = 0;
+lines.forEach((line, lineIdx) => {
+    const lineY = textY + lineIdx * lineSpacing;
+    const chars = line.split("");
+    chars.forEach((char, i) => {
+        const p = heartParticles[charCounter];
+        if (p) {
+            p.qrx = canvas.width / 2 - (chars.length * 9) + (i * 18);
+            p.qry = lineY;
+            p.isTextPointer = true;
+            p.letterIndex = charCounter;
+        }
+        charCounter++;
+    });
+});
+
+// Остальные частицы — в QR-код
+for (let i = charCounter; i < heartParticles.length; i++) {
+    const p = heartParticles[i];
+    const pos = qrPositions[(i - charCounter) % qrPositions.length];
+    p.qrx = pos.x * qrScale + qrOffsetX;
+    p.qry = pos.y * qrScale + qrOffsetY;
+    p.isTextPointer = false;
+}
     }
 }
 qrImage.onload = parseQR;
