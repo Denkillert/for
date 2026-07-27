@@ -151,13 +151,19 @@ function parseQR() {
     }
 
     if (qrPositions.length > 0) {
-        const isMobile = Math.min(canvas.width, canvas.height) < 700;
-        const targetSize = isMobile ? 250 : 300;
-        const qrScale = targetSize / qrSize;
-        
-        qrTotalSizeOnScreen = targetSize;
-        qrOffsetX = canvas.width / 2 - qrTotalSizeOnScreen / 2;
+    const isMobile = Math.min(canvas.width, canvas.height) < 700;
+    const targetSize = isMobile ? 250 : 300;
+    const qrScale = targetSize / qrSize;
+    
+    qrTotalSizeOnScreen = targetSize;
+    qrOffsetX = canvas.width / 2 - qrTotalSizeOnScreen / 2;
+    
+    // НА ТЕЛЕФОНЕ ПОДНИМАЕМ QR-КОД ВЫШЕ
+    if (isMobile) {
+        qrOffsetY = canvas.height * 0.15 - qrTotalSizeOnScreen / 2; // Было 0.42, стало 0.15
+    } else {
         qrOffsetY = canvas.height * 0.42 - qrTotalSizeOnScreen / 2;
+    }
         const textY = qrOffsetY + qrTotalSizeOnScreen + 60;
 
         const lineSpacing = 55;
