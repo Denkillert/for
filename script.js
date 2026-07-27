@@ -126,7 +126,7 @@ let qrOffsetX = 0, qrOffsetY = 0, qrTotalSizeOnScreen = 0;
 function parseQR() {
     const tempCanvas = document.createElement("canvas");
     const tempCtx = tempCanvas.getContext("2d");
-    const qrSize = 200; 
+    const qrSize = 130; 
     tempCanvas.width = qrSize;
     tempCanvas.height = qrSize;
     tempCtx.imageSmoothingEnabled = false;
@@ -145,7 +145,7 @@ function parseQR() {
     }
     if (qrPositions.length > 0) {
         const isMobile = Math.min(canvas.width, canvas.height) < 700;
-        const qrScale = Math.min(canvas.width, canvas.height) * (isMobile ? 0.0065 : 0.0022);
+        const qrScale = Math.min(canvas.width, canvas.height) * (isMobile ? 0.0055 : 0.0022);
         qrTotalSizeOnScreen = qrSize * qrScale;
         qrOffsetX = canvas.width / 2 - qrTotalSizeOnScreen / 2;
         qrOffsetY = canvas.height * 0.42 - qrTotalSizeOnScreen / 2;
