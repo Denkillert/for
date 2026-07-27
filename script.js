@@ -159,7 +159,12 @@ if (qrImage.complete) parseQR();
 
 // === ИСПРАВЛЕННЫЙ ОБРАБОТЧИК КНОПКИ ===
 function triggerSurprise(e) {
-    if (e.type === 'touchstart') e.preventDefault(); // Убираем зум и задержки на мобильных
+    // Блокируем стандартное поведение Android (зум, скролл, задержки)
+    if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
     if (mode === "heart") {
         mode = "qr-vortex"; 
         cardText.style.opacity = "0"; 
@@ -167,9 +172,11 @@ function triggerSurprise(e) {
         setTimeout(() => { mode = "qr"; }, 2200); 
     }
 }
-// Вешаем оба события для 100% совместимости
-qrBtn.addEventListener("click", triggerSurprise);
+
+// ВАЖНО: Вешаем ВСЕ возможные события для Android
+qrBtn.addEventListener("click", triggerSurprise, { passive: false });
 qrBtn.addEventListener("touchstart", triggerSurprise, { passive: false });
+qrBtn.addEventListener("touchend", triggerSurprise, { passive: false });
 
 // ИСПРАВЛЕНО: убраны лишние пробелы и сломанные стрелки
 setTimeout(() => { mode = "collapse"; }, 2200);  
